@@ -11,10 +11,9 @@ public class Java_project {
             SwingUtilities.invokeLater(() -> {
                 chat_mich serverChat = new chat_mich();
                 serverChat.setVisible(true);
+                // Ejecuta el servidor
+                chat_mich.main(new String[0]);
             });
-
-            // Ejecuta el servidor
-            chat_mich.main(new String[0]);
         }).start();
 
         // Espera un momento para asegurarse de que el servidor esté en ejecución
@@ -30,10 +29,9 @@ public class Java_project {
             SwingUtilities.invokeLater(() -> {
                 chat_pepe clientChat = new chat_pepe();
                 clientChat.setVisible(true);
+                // Ejecuta el cliente
+                chat_pepe.main(new String[0]);
             });
-
-            // Ejecuta el cliente
-            chat_pepe.main(new String[0]);
         }).start();
     }
 }

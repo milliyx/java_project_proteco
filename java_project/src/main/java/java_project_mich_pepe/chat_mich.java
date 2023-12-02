@@ -9,6 +9,7 @@ import java.net.*;
 import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.SwingUtilities;
 
 /**
  *
@@ -43,7 +44,10 @@ public class chat_mich extends javax.swing.JFrame {
         send = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+        setBackground(new java.awt.Color(0, 0, 0));
+        setPreferredSize(new java.awt.Dimension(420, 420));
 
+        area_message.setBackground(new java.awt.Color(204, 255, 204));
         area_message.setColumns(20);
         area_message.setRows(5);
         areamessage.setViewportView(area_message);
@@ -54,6 +58,7 @@ public class chat_mich extends javax.swing.JFrame {
             }
         });
 
+        send.setBackground(new java.awt.Color(255, 255, 0));
         send.setText("send");
         send.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -72,28 +77,26 @@ public class chat_mich extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(areamessage, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(28, 28, 28)
-                        .addComponent(tf_, javax.swing.GroupLayout.PREFERRED_SIZE, 121, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(tf_)
+                        .addGap(18, 18, 18)
+                        .addComponent(send)
+                        .addGap(29, 29, 29))
                     .addGroup(layout.createSequentialGroup()
-                        .addGap(48, 48, 48)
-                        .addComponent(send)))
-                .addContainerGap(31, Short.MAX_VALUE))
+                        .addComponent(areamessage, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)
+                        .addContainerGap())))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(areamessage)
+                .addComponent(areamessage, javax.swing.GroupLayout.PREFERRED_SIZE, 156, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(tf_, javax.swing.GroupLayout.PREFERRED_SIZE, 179, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(send))
                 .addContainerGap())
-            .addGroup(layout.createSequentialGroup()
-                .addGap(44, 44, 44)
-                .addComponent(tf_, javax.swing.GroupLayout.PREFERRED_SIZE, 72, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(73, 73, 73)
-                .addComponent(send)
-                .addContainerGap(88, Short.MAX_VALUE))
         );
 
         pack();
@@ -162,24 +165,23 @@ public class chat_mich extends javax.swing.JFrame {
         //</editor-fold>
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new chat_mich().setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            new chat_mich().setVisible(true);
         });
-
+        
         String message = "";
+
         try {
             serversocket = new ServerSocket(5555);
+            socket = serversocket.accept();
             in = new DataInputStream(socket.getInputStream());
             out = new DataOutputStream(socket.getOutputStream());
+
             while (!message.equals("exit")) {
                 message = in.readUTF();
                 area_message.setText(area_message.getText().trim() + "\n Cliente : " + message);
-
             }
         } catch (IOException e) {
-            Logger.getLogger(chat_pepe.class.getName()).log(Level.SEVERE, null, e);
         }
     }
 
