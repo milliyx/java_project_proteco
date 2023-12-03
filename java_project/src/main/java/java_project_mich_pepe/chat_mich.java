@@ -127,7 +127,7 @@ public class chat_mich extends javax.swing.JFrame {
         send.addActionListener((ActionListener) this);
         if (evt.getSource() == send) {
             try {
-                Socket cli = new Socket("192.168.0.8", 5555);
+                Socket cli = new Socket("192.168.0.10", 5555);
                 DataOutputStream flujo = new DataOutputStream(cli.getOutputStream());
                 flujo.writeUTF(tf_.getText());
                 cli.close();
@@ -169,20 +169,23 @@ public class chat_mich extends javax.swing.JFrame {
             new chat_mich().setVisible(true);
         });
         
+        new Thread(() -> {
+    try {
+        serversocket = new ServerSocket(5555);
+        socket = serversocket.accept();
+        in = new DataInputStream(socket.getInputStream());
+        out = new DataOutputStream(socket.getOutputStream());
+
         String message = "";
-
-        try {
-            serversocket = new ServerSocket(5555);
-            socket = serversocket.accept();
-            in = new DataInputStream(socket.getInputStream());
-            out = new DataOutputStream(socket.getOutputStream());
-
-            while (!message.equals("exit")) {
-                message = in.readUTF();
-                area_message.setText(area_message.getText().trim() + "\n Cliente : " + message);
-            }
-        } catch (IOException e) {
+        while (!message.equals("exit")) {
+            message = in.readUTF();
+            area_message.setText(area_message.getText().trim() + "\n Cliente : " + message);
         }
+    } catch (IOException e) {
+        e.printStackTrace();
+    }
+}).start();
+
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
