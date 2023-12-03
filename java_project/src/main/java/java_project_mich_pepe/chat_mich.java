@@ -10,6 +10,10 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Base64;
+import javax.crypto.Cipher;
 
 /**
  *
@@ -20,6 +24,10 @@ public class chat_mich extends javax.swing.JFrame {
     /**
      * Creates new form chat_mich
      */
+    static RSA rsaKeyGenerator = new RSA();
+    static PublicKey publicKey = rsaKeyGenerator.getPublicKey();
+    static PrivateKey privateKey = rsaKeyGenerator.getPrivateKey();
+
     static ServerSocket serversocket;
     static Socket socket;
     static DataInputStream in;
@@ -110,9 +118,9 @@ public class chat_mich extends javax.swing.JFrame {
         // TODO add your handling code here:
 
         try {
-            String newmessage = "";
-            newmessage = tf_.getText().trim();
-            out.writeUTF(newmessage);
+            String newmessage = tf_.getText().trim();
+            String mensajeCifrado = cifrarRSA(newmessage, publicKey);
+            out.writeUTF(mensajeCifrado);
 
             tf_.setText("");
 
@@ -120,7 +128,17 @@ public class chat_mich extends javax.swing.JFrame {
             Logger.getLogger(chat_pepe.class.getName()).log(Level.SEVERE, null, e);
         }
     }//GEN-LAST:event_sendActionPerformed
-
+    private String cifrarRSA(String mensaje, PublicKey clavePublica) {
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.ENCRYPT_MODE, clavePublica);
+            byte[] mensajeCifrado = cipher.doFinal(mensaje.getBytes());
+            return Base64.getEncoder().encodeToString(mensajeCifrado);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     private void sendKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_sendKeyPressed
         // TODO add your handling code here:
 
@@ -168,23 +186,23 @@ public class chat_mich extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> {
             new chat_mich().setVisible(true);
         });
-        
-        new Thread(() -> {
-    try {
-        serversocket = new ServerSocket(5555);
-        socket = serversocket.accept();
-        in = new DataInputStream(socket.getInputStream());
-        out = new DataOutputStream(socket.getOutputStream());
 
-        String message = "";
-        while (!message.equals("exit")) {
-            message = in.readUTF();
-            area_message.setText(area_message.getText().trim() + "\n Cliente : " + message);
-        }
-    } catch (IOException e) {
-        e.printStackTrace();
-    }
-}).start();
+        new Thread(() -> {
+            try {
+                serversocket = new ServerSocket(5555);
+                socket = serversocket.accept();
+                in = new DataInputStream(socket.getInputStream());
+                out = new DataOutputStream(socket.getOutputStream());
+
+                String message = "";
+                while (!message.equals("exit")) {
+                    message = in.readUTF();
+                    area_message.setText(area_message.getText().trim() + "\n Cliente : " + message);
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }).start();
 
     }
 

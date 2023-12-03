@@ -10,6 +10,10 @@ import java.io.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingUtilities;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.Base64;
+import javax.crypto.Cipher;
 
 /**
  *
@@ -20,6 +24,9 @@ public class chat_pepe extends javax.swing.JFrame {
     /**
      * Creates new form chat_pepe
      */
+    static RSA rsaKeyGenerator = new RSA();
+    static PublicKey publicKey = rsaKeyGenerator.getPublicKey();
+    static PrivateKey privateKey = rsaKeyGenerator.getPrivateKey();
     static Socket socket;
     static DataInputStream in;
     static DataOutputStream out;
@@ -103,9 +110,11 @@ public class chat_pepe extends javax.swing.JFrame {
     private void sendActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendActionPerformed
         // TODO add your handling code here:
         String newmessage = tf.getText().trim();
+        String mensajeCifrado = cifrarRSA(newmessage, publicKey);
+
         try {
-            out.writeUTF(newmessage);
-            tf.setText(newmessage);
+            out.writeUTF(mensajeCifrado);
+            tf.setText("");
         } catch (IOException e) {
             Logger.getLogger(chat_pepe.class.getName()).log(Level.SEVERE, null, e);
         }
@@ -118,7 +127,17 @@ public class chat_pepe extends javax.swing.JFrame {
     private void sendKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_sendKeyPressed
         // TODO add your handling code here:
     }//GEN-LAST:event_sendKeyPressed
-
+ private String cifrarRSA(String mensaje, PublicKey clavePublica) {
+        try {
+            Cipher cipher = Cipher.getInstance("RSA");
+            cipher.init(Cipher.ENCRYPT_MODE, clavePublica);
+            byte[] mensajeCifrado = cipher.doFinal(mensaje.getBytes());
+            return Base64.getEncoder().encodeToString(mensajeCifrado);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "";
+        }
+    }
     /**
      * @param args the command line arguments
      */
